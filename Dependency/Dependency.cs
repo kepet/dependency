@@ -12,7 +12,7 @@ namespace Dependency
 		ReleaseThis,
 		//ReleaseDepType,
 		ReleaseAll,
-//	    StepSuccess,
+   	    StepSuccess,
 		StepError,
 		StepSkip,
 		//StepFail,
@@ -50,10 +50,10 @@ namespace Dependency
 		ReleaseDep,
 		//ReleaseDepType,
 		ReleaseAll,
-		StepError,
+	    StepSuccess,
+	    StepError,
 		StepSkip,
 		//StepFail,
-		//StepSuccess,
 		//ParentOk,
 		//ParentError,
 		//JobOk,
@@ -90,8 +90,8 @@ namespace Dependency
 					return DependencyState.ReleaseThis;
 				case DependencyAction.ReleaseAll:
 					return DependencyState.ReleaseAll;
-//			    case DependencyAction.StepSuccess:
-//			        return DependencyState.StepSuccess;
+			    case DependencyAction.StepSuccess:
+			        return DependencyState.StepSuccess;
 			    case DependencyAction.StepError:
 			        return DependencyState.StepError;
 			    case DependencyAction.StepSkip:

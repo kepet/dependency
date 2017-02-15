@@ -116,8 +116,10 @@ namespace Dependency
 			            }
 			            break;
 
-
-//			        case DependencyState.StepSuccess:
+			        case DependencyState.StepSuccess:
+			            setState = true;
+			            newState = StepState.Success;
+			            break;
 
 			        case DependencyState.StepError:
 			            setState = true;

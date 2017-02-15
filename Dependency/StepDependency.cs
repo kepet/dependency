@@ -13,7 +13,7 @@
 	    public StepDependency (
 		    string taskName,
 		    DependencyAction onSuccess = DependencyAction.ReleaseDep,
-		    DependencyAction onError = DependencyAction.StepError,
+		    DependencyAction onError = DependencyAction.StepSkip,
 		    DependencyAction onTimeout = DependencyAction.StepSkip,
 		    DependencyAction onSkipped = DependencyAction.StepSkip
 		) {

@@ -516,6 +516,8 @@ namespace Dependency.Test
 	        Step stepA2;
 	        Step stepA3;
 
+	        // Error -> ALl to Skipped by Default -------------
+
 	        sched = new Scheduler();
 
 	        stepA1 = new Step("A1"); sched.AddStep(stepA1);
@@ -544,8 +546,105 @@ namespace Dependency.Test
 	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
 	        Assert.AreEqual(SchedulerState.Complete, sched.State);
 	        Assert.AreEqual(StepState.Error, sched.GetStep("A1").State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A2").State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A3").State);
+
+	        // Error -> All forced to Error -------------
+
+	        sched = new Scheduler();
+
+	        stepA1 = new Step("A1"); sched.AddStep(stepA1);
+	        stepA2 = new Step("A2"); sched.AddStep(stepA2);
+	        stepA3 = new Step("A3"); sched.AddStep(stepA3);
+
+	        stepA2.AddDependency(new StepDependency("A1", DependencyAction.ReleaseDep, DependencyAction.StepError));
+	        stepA3.AddDependency(new StepDependency("A2", DependencyAction.ReleaseDep, DependencyAction.StepError));
+
+	        // A1 can queue no restrictions
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+
+	        // A1 in Error, by Default triggers all to Error
+	        stepA1.State = StepState.Error;
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+	        Assert.AreEqual(SchedulerState.Complete, sched.State);
+	        Assert.AreEqual(StepState.Error, sched.GetStep("A1").State);
 	        Assert.AreEqual(StepState.Error, sched.GetStep("A2").State);
 	        Assert.AreEqual(StepState.Error, sched.GetStep("A3").State);
+
+	        // Skip -> All to Skipped -------------
+
+	        sched = new Scheduler();
+
+	        stepA1 = new Step("A1"); sched.AddStep(stepA1);
+	        stepA2 = new Step("A2"); sched.AddStep(stepA2);
+	        stepA3 = new Step("A3"); sched.AddStep(stepA3);
+
+	        stepA2.AddDependency(new StepDependency("A1"));
+	        stepA3.AddDependency(new StepDependency("A2"));
+
+	        // A1 can queue no restrictions
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+
+	        // A1 in Error, by Default triggers all to Error
+	        stepA1.State = StepState.Skipped;
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+	        Assert.AreEqual(SchedulerState.Complete, sched.State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A1").State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A2").State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A3").State);
+
+	        // Timeout -> All to Skipped -------------
+
+	        sched = new Scheduler();
+
+	        stepA1 = new Step("A1"); sched.AddStep(stepA1);
+	        stepA2 = new Step("A2"); sched.AddStep(stepA2);
+	        stepA3 = new Step("A3"); sched.AddStep(stepA3);
+
+	        stepA2.AddDependency(new StepDependency("A1"));
+	        stepA3.AddDependency(new StepDependency("A2"));
+
+	        // A1 can queue no restrictions
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+
+	        // A1 in Error, by Default triggers all to Error
+	        stepA1.State = StepState.Timeout;
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+	        Assert.AreEqual(SchedulerState.Complete, sched.State);
+	        Assert.AreEqual(StepState.Timeout, sched.GetStep("A1").State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A2").State);
+	        Assert.AreEqual(StepState.Skipped, sched.GetStep("A3").State);
+
+	        // Success -> Force all to Skipped -------------
+
+	        sched = new Scheduler();
+
+	        stepA1 = new Step("A1"); sched.AddStep(stepA1);
+	        stepA2 = new Step("A2"); sched.AddStep(stepA2);
+	        stepA3 = new Step("A3"); sched.AddStep(stepA3);
+
+	        stepA2.AddDependency(new StepDependency("A1", DependencyAction.StepSuccess));
+	        stepA3.AddDependency(new StepDependency("A2", DependencyAction.StepSuccess));
+
+	        // A1 can queue no restrictions
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+
+	        // A1 in Error, by Default triggers all to Error
+	        stepA1.State = StepState.Success;
+	        ctx = new TestDependContext();
+	        Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+	        Assert.AreEqual(SchedulerState.Complete, sched.State);
+	        Assert.AreEqual(StepState.Success, sched.GetStep("A1").State);
+	        Assert.AreEqual(StepState.Success, sched.GetStep("A2").State);
+	        Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
+
 
 
 	    }

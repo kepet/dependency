@@ -30,8 +30,7 @@ namespace Dependency
 	                        break;
 	                    case StepState.Success:
 	                    case StepState.Skipped:
-	                    //case StepState.Terminated,
-	                    //case StepState.Timeout,
+	                    case StepState.Timeout:
 	                    case StepState.Error:
 	                        notsub = false;
 	                        break;
