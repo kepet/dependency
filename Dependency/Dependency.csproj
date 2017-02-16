@@ -44,11 +44,13 @@
     <Compile Include="IDependContext.cs" />
     <Compile Include="IDependency.cs" />
     <Compile Include="IScheduler.cs" />
+    <Compile Include="IStep.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler.cs" />
     <Compile Include="Step.cs" />
     <Compile Include="StepDependency.cs" />
     <Compile Include="TimeDependency.cs" />
+    <Compile Include="Topo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

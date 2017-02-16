@@ -7,5 +7,7 @@ namespace Dependency
 	{
 		DateTime Now { get; set; }	
 		//Dictionary<string, string>	Param { get; set; }
+
+//	    DateTime
 	}
 }

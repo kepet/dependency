@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Dependency
 {
@@ -13,7 +14,7 @@ namespace Dependency
 	{
 		public Scheduler()
 		{
-			StepList = new Dictionary<string, Step>();
+			StepDictionary = new Dictionary<string, Step>();
 		}
 
 	    public SchedulerState State
@@ -22,7 +23,7 @@ namespace Dependency
 	        {
 	            bool active = false;
 	            bool notsub = true;
-	            foreach (var step in StepList)
+	            foreach (var step in StepDictionary)
 	            {
 	                switch (step.Value.State)
 	                {
@@ -47,40 +48,49 @@ namespace Dependency
 	        }
 	    }
 
-	    protected Dictionary<string, Step> StepList;
+	    protected Dictionary<string, Step> StepDictionary;
+
+	    public IList<string> DepFunction(string name)
+	    {
+	        return StepDictionary[name].StepDependencyNameList();
+	    }
+
+	    protected IList<Step> OrderedStepList
+	    {
+	        get
+	        {
+	            if (_orderedStepList == null)
+	            {
+	                _orderedStepList = new List<Step>();
+	                var nameList = StepDictionary.Select(step => step.Key).ToList();
+	                var sorter = new TopologicalSorter();
+	                var sortedNameList = sorter.Do(nameList, DepFunction);
+	                foreach (var name in sortedNameList)
+	                {
+	                    _orderedStepList.Add(StepDictionary[name]);
+	                }
+	            }
+	            return _orderedStepList;
+	        }
+	    }
 
 		public void AddStep(Step step)
 		{
-			StepList.Add(step.Name, step);
+			StepDictionary.Add(step.Name, step);
+		    _orderedStepList = null;
 		}
 
 		public Step GetStep(string name)
 		{
-			return StepList.ContainsKey(name) ? StepList[name] : null;
+			return StepDictionary.ContainsKey(name) ? StepDictionary[name] : null;
 		}
-
-		//public bool RefreshDependency(IDependContext context)
-		//{
-		//	bool wasUpdated = false;
-		//	bool runUpdated = false;
-		//	do
-		//	{
-		//		runUpdated = false;
-		//		foreach (var step in StepList)
-		//		{
-		//			if (step.Value.Refresh(this, context)) runUpdated = true;
-		//		}
-		//		if (runUpdated) wasUpdated = true;
-		//	} while (runUpdated);
-		//	return wasUpdated;
-		//}
 
 	    public RefreshState RefreshDependency(IDependContext context)
 		{
 		    RefreshState result = RefreshState.Untouched;
-		    foreach (var step in StepList)
+		    foreach (var step in OrderedStepList)
 		    {
-		        switch (step.Value.Refresh(this, context))
+		        switch (step.Refresh(this, context))
 		        {
 		            case RefreshState.Untouched:
 		                break;
@@ -93,5 +103,6 @@ namespace Dependency
 			return result;
 		}
 
+	    private List<Step> _orderedStepList;
 	}
 }

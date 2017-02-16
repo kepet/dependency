@@ -8,8 +8,8 @@ namespace Dependency
         Updated,
     }
 
-	public class Step
-	{
+    public class Step : IStep
+    {
 		public string Name { get; private set; }
 		public StepState State { get; internal set; }
 
@@ -23,7 +23,20 @@ namespace Dependency
 			DependencyList = new List<Dependency>();
 		}
 
-		public void AddDependency(Dependency dependency)
+        public IList<string> StepDependencyNameList()
+        {
+            var result = new List<string>();
+            foreach (var dependency in DependencyList)
+            {
+                if (dependency is StepDependency)
+                {
+                    result.Add((dependency as StepDependency).TaskName);
+                }
+            }
+            return result;
+        }
+
+        public void AddDependency(Dependency dependency)
 		{
 			DependencyList.Add(dependency);
 		}
@@ -117,13 +130,19 @@ namespace Dependency
 			            break;
 
 			        case DependencyState.StepSuccess:
-			            setState = true;
-			            newState = StepState.Success;
+			            if (newState != StepState.Error && newState != StepState.Skipped)
+			            {
+			                setState = true;
+			                newState = StepState.Success;
+			            }
 			            break;
 
 			        case DependencyState.StepError:
-			            setState = true;
-			            newState = StepState.Error;
+			            if (newState != StepState.Skipped)
+			            {
+			                setState = true;
+			                newState = StepState.Error;
+			            }
 			            break;
 
 			        case DependencyState.StepSkip:
