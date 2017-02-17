@@ -8,7 +8,7 @@ namespace Dependency
         StepState State { get; }
         bool AllowQueueRevoke { get; set; }
 
-        IList<string> StepDependencyNameList();
+//        IList<string> StepDependencyNameList();
         void AddDependency(Dependency dependency);
         RefreshState Refresh(Scheduler sched, IDependContext context);
     }

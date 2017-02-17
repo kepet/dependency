@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Dependency.Test
 {
@@ -15,37 +16,53 @@ namespace Dependency.Test
         //public Dictionary<string, string> Param { get; set; }
     }
 
+    class TestSortItem : IGraphItem
+    {
+        public TestSortItem(string name, List<string> dependencies)
+        {
+            Name = name;
+            Dependencies = dependencies;
+        }
+        public string Name { get; }
+        public List<string> Dependencies { get; }
+    }
 
     [TestFixture()]
     public class Test
     {
-        public IEnumerable<string> DepFunction(string name)
-        {
-            switch (name)
-            {
-               case "A": return new List<string>{ "E" };
-               case "B": return new List<string>{ "F" };
-               case "C": return new List<string>{ "G", "A", "B" };
-               case "D": return new List<string>();
-               case "E": return new List<string>();
-               case "F": return new List<string>{ "E" };
-               case "G": return new List<string>();
-            }
-            return new List<string>();
-        }
 
         [Test()]
-        public void TestCase()
+        public void TopoSortTest()
         {
-            var data = new List<string> {"A", "B", "C", "D", "E", "F", "G"};
-            var sorter = new TopologicalSorter();
-            var c = sorter.Do(data, DepFunction);
-//            var b = TopologicalSorter.
-            // Topo a = new Topo();
-            foreach (var i in c)
+            var data = new List<IGraphItem>
             {
-                Console.WriteLine(i);
-            }
+                new TestSortItem("A", new List<string>{ "E" }),
+                new TestSortItem("B", new List<string>{ "F" }),
+                new TestSortItem("C", new List<string>{ "G", "A", "B" }),
+                new TestSortItem("D", new List<string>()),
+                new TestSortItem("E", new List<string>()),
+                new TestSortItem("F", new List<string>{ "E" }),
+                new TestSortItem("G", new List<string>())
+            };
+
+            var sorter = new TopologicalSorter();
+            var sortedData = sorter.Do(data);
+
+            var indexA = sortedData.IndexOf("A");
+            var indexB = sortedData.IndexOf("B");
+            var indexC = sortedData.IndexOf("C");
+            var indexD = sortedData.IndexOf("D");
+            var indexE = sortedData.IndexOf("E");
+            var indexF = sortedData.IndexOf("F");
+            var indexG = sortedData.IndexOf("G");
+
+            Assert.Greater(indexA,indexE);
+            Assert.Greater(indexB,indexF);
+            Assert.Greater(indexC,indexG);
+            Assert.Greater(indexC,indexA);
+            Assert.Greater(indexC,indexB);
+            Assert.Greater(indexF,indexE);
+
         }
 
         [Test()]
@@ -783,12 +800,9 @@ namespace Dependency.Test
 
             sched = new Scheduler();
 
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
-            stepA3 = new Step("A3");
-            sched.AddStep(stepA3);
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
+            stepA3 = new Step("A3"); sched.AddStep(stepA3);
 
             stepA3.AddDependency(new StepDependency("A1", DependencyAction.StepSuccess));
             stepA2.AddDependency(new StepDependency("A3", DependencyAction.StepSuccess));

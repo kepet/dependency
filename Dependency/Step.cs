@@ -8,7 +8,7 @@ namespace Dependency
         Updated,
     }
 
-    public class Step : IStep
+    public class Step : IStep, IGraphItem
     {
 		public string Name { get; private set; }
 		public StepState State { get; internal set; }
@@ -23,17 +23,22 @@ namespace Dependency
 			DependencyList = new List<Dependency>();
 		}
 
-        public IList<string> StepDependencyNameList()
+//        public IList<string> StepDependencyNameList()
+
+        public List<string> Dependencies
         {
-            var result = new List<string>();
-            foreach (var dependency in DependencyList)
+            get
             {
-                if (dependency is StepDependency)
+                var result = new List<string>();
+                foreach (var dependency in DependencyList)
                 {
-                    result.Add((dependency as StepDependency).TaskName);
+                    if (dependency is StepDependency)
+                    {
+                        result.Add((dependency as StepDependency).TaskName);
+                    }
                 }
+                return result;
             }
-            return result;
         }
 
         public void AddDependency(Dependency dependency)
