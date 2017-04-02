@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Dependency
@@ -13,78 +12,76 @@ namespace Dependency
 
     public class TopologicalSorter
     {
-        public List<string> LastCyclicOrder = new List<string>(); //used to see what caused the cycle
-
-        sealed class ItemTag2
+        private enum SortState
         {
-            public enum SortTag
-            {
-                NotMarked,
-                TempMarked,
-                Marked
-            }
+            Unknown,
+            Active,
+            Finished
+        }
 
-            public string Name => Item.Name;
-            public SortTag Tag { get; set; }
-            public IGraphItem Item { get; private set; }
+        private sealed class ItemTag<T>
+        {
+            public SortState State { get; set; }
+            public T Item { get; private set; }
 
-            public ItemTag2(IGraphItem item)
+            public ItemTag(T item)
             {
                 Item = item;
-                Tag = SortTag.NotMarked;
+                State = SortState.Unknown;
             }
         }
 
-        public
-//            List<IGraphItem>
-            List<string>
-            Do( List<IGraphItem> items)
+        public List<T> Do<T>(List<T> items) where T : IGraphItem
         {
-            LastCyclicOrder.Clear();
+            var allNodes = items.ToDictionary(item => item.Name, item => new ItemTag<T>(item));
 
-            List<ItemTag2> allNodes = new List<ItemTag2>();
-            HashSet<string> sorted = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            CheckForMissingDependencies(allNodes);
 
-            foreach (var item in items)
+            var lastCyclicOrder = new Stack<string>();
+            var sortedNames = new HashSet<string>();
+            foreach (var tag in allNodes)
             {
-                if (!allNodes.Any(n => string.Equals(n.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
-                {
-                    allNodes.Add(new ItemTag2(item)); //don't insert duplicates
-                }
-//                foreach (string dep in dependencies(item))
-//                {
-//                    if (allNodes.Any(n => string.Equals(n.Name, dep, StringComparison.OrdinalIgnoreCase))) continue; //throw new Exception("Dublicate");
-//                    allNodes.Add(new ItemTag(dep));
-//                }
+                Visit(tag.Value, allNodes, lastCyclicOrder, sortedNames);
             }
 
-            foreach (ItemTag2 tag in allNodes)
-            {
-                Visit(tag, allNodes, sorted);
-            }
-
-            return sorted.ToList();
+            return sortedNames.Select(name => allNodes[name].Item).ToList();
         }
 
-        void Visit(ItemTag2 tag, List<ItemTag2> allNodes, HashSet<string> sorted)
+        private void CheckForMissingDependencies<T>(Dictionary<string, ItemTag<T>> allNodes) where T : IGraphItem
         {
-            if (tag.Tag == ItemTag2.SortTag.TempMarked)
+            foreach (var node in allNodes)
             {
-                throw new Exception("GraphIsCyclic");
-            }
-            else if (tag.Tag == ItemTag2.SortTag.NotMarked)
-            {
-                tag.Tag = ItemTag2.SortTag.TempMarked;
-                LastCyclicOrder.Add(tag.Name);
-
-                foreach (ItemTag2 dep in tag.Item.Dependencies.Select(s => allNodes.First( t => string.Equals(s, t.Name, StringComparison.OrdinalIgnoreCase)))) //get name tag which falls with used string
+                foreach (var dep in node.Value.Item.Dependencies)
                 {
-                    Visit(dep, allNodes, sorted);
+                    if (!allNodes.ContainsKey(dep))
+                    {
+                        throw new Exception($"Missing Dependency: [{node.Value.Item.Name}] <- [{dep}].");
+                    }
+                }
+            }
+        }
+
+        private void Visit<T>(ItemTag<T> tag, Dictionary<string, ItemTag<T>> allNodes, Stack<string> lastCyclicOrder, HashSet<string> sortedNames) where T : IGraphItem
+        {
+            if (tag.State == SortState.Active)
+            {
+                var cycle = "";
+                cycle = lastCyclicOrder.Reverse().Aggregate(cycle, (current, item) => current + ("[" + item + "] <- "));
+                throw new Exception("Cyclic Dependency: " + cycle + " [" + tag.Item.Name + "].");
+            }
+            else if (tag.State == SortState.Unknown)
+            {
+                tag.State = SortState.Active;
+                lastCyclicOrder.Push(tag.Item.Name);
+
+                foreach (var dep in tag.Item.Dependencies.Select(s => allNodes.First( t => s == t.Key )))
+                {
+                    Visit(dep.Value, allNodes, lastCyclicOrder, sortedNames);
                 }
 
-                LastCyclicOrder.Remove(tag.Name);
-                tag.Tag = ItemTag2.SortTag.Marked;
-                sorted.Add(tag.Name);
+                lastCyclicOrder.Pop();
+                tag.State = SortState.Finished;
+                sortedNames.Add(tag.Item.Name);
             }
         }
 

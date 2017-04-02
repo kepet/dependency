@@ -50,33 +50,21 @@ namespace Dependency
 
 	    protected Dictionary<string, Step> StepDictionary;
 
-//	    public IList<string> DepFunction(string name)
-//	    {
-//	        return StepDictionary[name].StepDependencyNameList();
-//	    }
-
 	    protected IList<Step> OrderedStepList
 	    {
 	        get
 	        {
 	            if (_orderedStepList == null)
 	            {
+	                var doList = StepDictionary.Select(step => step.Value).ToList();
+	                var sorter = new TopologicalSorter();
+	                _orderedStepList = sorter.Do(doList);
+//
 //	                _orderedStepList = new List<Step>();
-//	                var nameList = StepDictionary.Select(step => step.Key).ToList();
-//	                var sorter = new TopologicalSorter();
-//	                var sortedNameList = sorter.Do(nameList, DepFunction);
 //	                foreach (var name in sortedNameList)
 //	                {
 //	                    _orderedStepList.Add(StepDictionary[name]);
 //	                }
-	                _orderedStepList = new List<Step>();
-	                var doList = StepDictionary.Select(step => step.Value).Cast<IGraphItem>().ToList();
-	                var sorter = new TopologicalSorter();
-	                var sortedNameList = sorter.Do(doList);
-	                foreach (var name in sortedNameList)
-	                {
-	                    _orderedStepList.Add(StepDictionary[name]);
-	                }
 	            }
 	            return _orderedStepList;
 	        }

@@ -1,135 +1,12 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Dependency.Test
 {
-    class TestDependContext : IDependContext
-    {
-        public TestDependContext( /*Scheduler sched*/)
-        {
-            //Param = new Dictionary<string, string>();
-        }
-
-        public DateTime Now { get; set; }
-        //public Dictionary<string, string> Param { get; set; }
-    }
-
-    class TestSortItem : IGraphItem
-    {
-        public TestSortItem(string name, List<string> dependencies)
-        {
-            Name = name;
-            Dependencies = dependencies;
-        }
-        public string Name { get; }
-        public List<string> Dependencies { get; }
-    }
-
-    [TestFixture()]
+    [TestFixture]
     public class Test
     {
-
-        [Test()]
-        public void TopoSortTest()
-        {
-            var data = new List<IGraphItem>
-            {
-                new TestSortItem("A", new List<string>{ "E" }),
-                new TestSortItem("B", new List<string>{ "F" }),
-                new TestSortItem("C", new List<string>{ "G", "A", "B" }),
-                new TestSortItem("D", new List<string>()),
-                new TestSortItem("E", new List<string>()),
-                new TestSortItem("F", new List<string>{ "E" }),
-                new TestSortItem("G", new List<string>())
-            };
-
-            var sorter = new TopologicalSorter();
-            var sortedData = sorter.Do(data);
-
-            var indexA = sortedData.IndexOf("A");
-            var indexB = sortedData.IndexOf("B");
-            var indexC = sortedData.IndexOf("C");
-            var indexD = sortedData.IndexOf("D");
-            var indexE = sortedData.IndexOf("E");
-            var indexF = sortedData.IndexOf("F");
-            var indexG = sortedData.IndexOf("G");
-
-            Assert.Greater(indexA,indexE);
-            Assert.Greater(indexB,indexF);
-            Assert.Greater(indexC,indexG);
-            Assert.Greater(indexC,indexA);
-            Assert.Greater(indexC,indexB);
-            Assert.Greater(indexF,indexE);
-
-        }
-
-        [Test()]
-        public void TimeDepTest()
-        {
-            IScheduler sched;
-            IDependency dep;
-            IDependContext ctx;
-
-            // Dependency Test ---------------------
-
-            sched = new Scheduler();
-            dep = new Dependency();
-            ctx = new TestDependContext();
-
-            Assert.AreEqual(false, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.Blocked, dep.State);
-
-            // Closed Time Range -------------------------
-
-            // To Early
-            dep = new TimeDependency(new TimeSpan(10, 0, 0), new TimeSpan(10, 0, 0));
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0)};
-            Assert.AreEqual(false, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.Blocked, dep.State);
-
-            // To Late
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 0, 0)};
-            Assert.AreEqual(false, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.Blocked, dep.State);
-
-            // On Time
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 10, 0, 0)};
-            Assert.AreEqual(true, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.ReleaseThis, dep.State);
-
-            // Back to Blocked, so updated
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 0, 0)};
-            Assert.AreEqual(true, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.Blocked, dep.State);
-
-            // After Time ------------------------------
-
-            // To Early
-            dep = new TimeDependency(new TimeSpan(10, 0, 0));
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0)};
-            Assert.AreEqual(false, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.Blocked, dep.State);
-
-            // On Time
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 10, 0, 0)};
-            Assert.AreEqual(true, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.ReleaseThis, dep.State);
-
-            // After Time
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 0, 0)};
-            Assert.AreEqual(false, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.ReleaseThis, dep.State);
-
-            // Back to Blocked, so updated
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0)};
-            Assert.AreEqual(true, dep.Refresh(sched, ctx));
-            Assert.AreEqual(DependencyState.Blocked, dep.State);
-        }
-
-
-        [Test()]
+        [Test]
         public void StepDepTest()
         {
             IScheduler sched;
@@ -145,7 +22,7 @@ namespace Dependency.Test
             Assert.AreEqual(DependencyState.Blocked, dep.State);
         }
 
-        [Test()]
+        [Test]
         public void StepDepSchedulerTest()
         {
             IScheduler sched;
@@ -186,7 +63,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Queued, sched.GetStep("A2").State);
         }
 
-        [Test()]
+        [Test]
         public void ReverseStepDepSchedulerTest()
         {
             IScheduler sched;
@@ -199,12 +76,9 @@ namespace Dependency.Test
 
             sched = new Scheduler();
             ctx = new TestDependContext();
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
-            stepA3 = new Step("A3");
-            sched.AddStep(stepA3);
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
+            stepA3 = new Step("A3"); sched.AddStep(stepA3);
 
             stepA1.AddDependency(new StepDependency("A2"));
             stepA2.AddDependency(new StepDependency("A3"));
@@ -267,91 +141,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
         }
 
-
-        [Test()]
-        public void TimeDepStepDepSchedulerTest()
-        {
-            IScheduler sched;
-            IDependContext ctx;
-            Step stepA1;
-            Step stepA2;
-
-            sched = new Scheduler();
-
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA1.AddDependency(new TimeDependency(new TimeSpan(8, 0, 0), new TimeSpan(10, 0, 0)));
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
-            stepA2.AddDependency(new StepDependency("A1"));
-
-            Assert.AreEqual(StepState.NotSub, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.NotSub, sched.GetStep("A2").State);
-
-            // Too early nothing Happens
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0)};
-            Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // On Time, A1 Released
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0)};
-            Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // Time Passes, still on time
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 1, 0)};
-            Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // Time Over, Step is Unqueued
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 12, 0, 0)};
-            Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // Switch off AllowQueueRevoke
-            stepA1.AllowQueueRevoke = false;
-
-            // On Time, A1 Released again
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0)};
-            Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // Time Passes, still on time
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 1, 0)};
-            Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // Time Over, Step is keep Released
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 12, 0, 0)};
-            Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
-
-            // Step A1 Complete, make room for releasing A2
-            stepA1.State = StepState.Success;
-
-            // Time Over, Step is keep Released
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 12, 1, 0)};
-            Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
-            Assert.AreEqual(StepState.Success, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.Queued, sched.GetStep("A2").State);
-
-            // Complete A2
-            stepA2.State = StepState.Error;
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 12, 2, 0)};
-            Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
-            Assert.AreEqual(SchedulerState.Complete, sched.State);
-            Assert.AreEqual(StepState.Success, sched.GetStep("A1").State);
-            Assert.AreEqual(StepState.Error, sched.GetStep("A2").State);
-        }
-
-        [Test()]
+        [Test]
         public void TimeThenStepDepSchedulerTest()
         {
             IScheduler sched;
@@ -391,7 +181,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
         }
 
-        [Test()]
+        [Test]
         public void TimeAndStepDepSchedulerTest()
         {
             IScheduler sched;
@@ -402,12 +192,9 @@ namespace Dependency.Test
 
             sched = new Scheduler();
 
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
-            stepA3 = new Step("A3");
-            sched.AddStep(stepA3);
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
+            stepA3 = new Step("A3"); sched.AddStep(stepA3);
 
             stepA2.AddDependency(new StepDependency("A1"));
             stepA3.AddDependency(new StepDependency("A2"));
@@ -418,21 +205,23 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.NotSub, sched.GetStep("A3").State);
 
             // A1 can queue no restrictions
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0)};
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0), NewRefresh = DateTime.MaxValue};
             Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 1, 8, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
 
             // Move Time In window, only one dependeny release son no changes
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0)};
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0), NewRefresh = DateTime.MaxValue};
             Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 1, 10, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
         }
 
-        [Test()]
+        [Test]
         public void ReleaseAllDepSchedulerTest()
         {
             IScheduler sched;
@@ -443,61 +232,62 @@ namespace Dependency.Test
 
             sched = new Scheduler();
 
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
-            stepA3 = new Step("A3");
-            sched.AddStep(stepA3);
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
+            stepA3 = new Step("A3"); sched.AddStep(stepA3);
 
             stepA2.AddDependency(new StepDependency("A1"));
             stepA3.AddDependency(new StepDependency("A2"));
-            stepA3.AddDependency(new TimeDependency(new TimeSpan(8, 0, 0), new TimeSpan(10, 0, 0),
-                DependencyAction.ReleaseAll));
+            stepA3.AddDependency(new TimeDependency(new TimeSpan(8, 0, 0), new TimeSpan(10, 0, 0), DependencyAction.ReleaseAll));
 
             Assert.AreEqual(StepState.NotSub, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.NotSub, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.NotSub, sched.GetStep("A3").State);
 
             // A1 can queue no restrictions
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0)};
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 0, 0, 0), NewRefresh = DateTime.MaxValue};
             Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 1, 8, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
 
             // Move Time In window, force releases A3
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0)};
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 9, 0, 0), NewRefresh = DateTime.MaxValue};
             Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 1, 10, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A3").State);
 
-            // Move Time outside window, Take back Releasing
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 0, 0)};
+            // Move Time outside window, Take back Releasing, refresh on next day
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 0, 0), NewRefresh = DateTime.MaxValue};
             Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 2, 8, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
 
-            // Step A1 Success, release A2,
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 2, 0)};
+            // Step A1 Success, release A2, still next day
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 2, 0), NewRefresh = DateTime.MaxValue};
             stepA1.State = StepState.Success;
             Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 2, 8, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Success, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
 
-            // Step A2 Success, Butrelease A3,
-            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 4, 0)};
+            // Step A2 Success, But release A3, still next day
+            ctx = new TestDependContext() {Now = new DateTime(1, 1, 1, 11, 4, 0), NewRefresh = DateTime.MaxValue};
             stepA2.State = StepState.Success;
             Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
+            Assert.AreEqual(new DateTime(1, 1, 2, 8, 0, 0), ctx.NewRefresh);
             Assert.AreEqual(StepState.Success, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
         }
 
-        [Test()]
+        [Test]
         public void SkipDepSchedulerTest()
         {
             IScheduler sched;
@@ -507,10 +297,8 @@ namespace Dependency.Test
 
             sched = new Scheduler();
 
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
 
             stepA2.AddDependency(new StepDependency("A1", DependencyAction.StepSkip));
             stepA2.AddDependency(new TimeDependency(new TimeSpan(8, 0, 0), new TimeSpan(10, 0, 0),
@@ -554,7 +342,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Skipped, sched.GetStep("A2").State);
         }
 
-        [Test()]
+        [Test]
         public void AllCompleteStateschedulerTest()
         {
             IScheduler sched;
@@ -705,7 +493,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
         }
 
-        [Test()]
+        [Test]
         public void CompletePriorityStateschedulerTest()
         {
             IScheduler sched;
@@ -718,17 +506,26 @@ namespace Dependency.Test
 
             sched = new Scheduler();
 
-            stepA1 = new Step("A1");
-            sched.AddStep(stepA1);
-            stepA2 = new Step("A2");
-            sched.AddStep(stepA2);
-            stepA3 = new Step("A3");
-            sched.AddStep(stepA3);
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
+            stepA3 = new Step("A3"); sched.AddStep(stepA3);
 
-            stepA3.AddDependency(new StepDependency("A1", DependencyAction.StepSuccess, DependencyAction.StepError,
-                DependencyAction.StepSkip, DependencyAction.StepSkip));
-            stepA3.AddDependency(new StepDependency("A2", DependencyAction.StepSuccess, DependencyAction.StepError,
-                DependencyAction.StepSkip, DependencyAction.StepSkip));
+            stepA3.AddDependency(
+                new StepDependency("A1",
+                    DependencyAction.StepSuccess,
+                    DependencyAction.StepError,
+                    DependencyAction.StepSkip,
+                    DependencyAction.StepSkip
+                )
+            );
+            stepA3.AddDependency(
+                new StepDependency("A2",
+                    DependencyAction.StepSuccess,
+                    DependencyAction.StepError,
+                    DependencyAction.StepSkip,
+                    DependencyAction.StepSkip
+                )
+            );
 
             ctx = new TestDependContext();
 
@@ -787,7 +584,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Skipped, sched.GetStep("A3").State);
         }
 
-        [Test()]
+        [Test]
         public void OrderSchedulerTest()
         {
             IScheduler sched;
@@ -820,9 +617,60 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
         }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public void CycleCheckSchedulerTest()
+        {
+            IScheduler sched;
+            IDependContext ctx;
+            Step stepA1;
+            Step stepA2;
+            Step stepA3;
+
+            // Setup ---------
+
+            sched = new Scheduler();
+
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA2 = new Step("A2"); sched.AddStep(stepA2);
+            stepA3 = new Step("A3"); sched.AddStep(stepA3);
+
+            stepA1.AddDependency(new StepDependency("A3", DependencyAction.StepSuccess));
+            stepA2.AddDependency(new StepDependency("A1", DependencyAction.StepSuccess));
+            stepA3.AddDependency(new StepDependency("A2", DependencyAction.StepSuccess));
+
+            ctx = new TestDependContext();
+//            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
+            sched.RefreshDependency(ctx);
+
+            Assert.Fail("Expected Exception before reaching here.");
+
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public void MissingDepCheckSchedulerTest()
+        {
+            IScheduler sched;
+            IDependContext ctx;
+            Step stepA1;
+
+            // Setup ---------
+
+            sched = new Scheduler();
+
+            stepA1 = new Step("A1"); sched.AddStep(stepA1);
+            stepA1.AddDependency(new StepDependency("MISSING", DependencyAction.StepSuccess));
+
+            ctx = new TestDependContext();
+//            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
+            sched.RefreshDependency(ctx);
+
+            Assert.Fail("Expected Exception before reaching here.");
+        }
+
+
     }
-    
-
-
 
 }
