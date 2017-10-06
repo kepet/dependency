@@ -1,0 +1,16 @@
+Y:/kepet/Dependency/Dependency/bin/Debug/Dependency.dll
+Y:/kepet/Dependency/Dependency/bin/Debug/Dependency.pdb
+Y:/kepet/Dependency/Dependency/obj/Debug/Dependency.csprojResolveAssemblyReference.cache
+Y:/kepet/Dependency/Dependency/obj/Debug/Dependency.dll
+Y:/kepet/Dependency/Dependency/obj/Debug/Dependency.pdb
+/Users/kepet/kepet/Dependency/Dependency/bin/Debug/Dependency.dll
+/Users/kepet/kepet/Dependency/Dependency/bin/Debug/Dependency.dll.mdb
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/Dependency.csprojResolveAssemblyReference.cache
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/Dependency.dll
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/Dependency.dll.mdb
+/Users/kepet/Move/Projects/Dependency/Dependency/bin/Debug/Dependency.dll
+/Users/kepet/Move/Projects/Dependency/Dependency/bin/Debug/Dependency.pdb
+/Users/kepet/Move/Projects/Dependency/Dependency/obj/Debug/Dependency.csprojResolveAssemblyReference.cache
+/Users/kepet/Move/Projects/Dependency/Dependency/obj/Debug/Dependency.csproj.CoreCompileInputs.cache
+/Users/kepet/Move/Projects/Dependency/Dependency/obj/Debug/Dependency.dll
+/Users/kepet/Move/Projects/Dependency/Dependency/obj/Debug/Dependency.pdb

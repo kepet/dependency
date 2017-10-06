@@ -1,0 +1,11 @@
+/Users/kepet/kepet/Dependency/Dependency.Test/obj/Debug/.NETFramework,Version=v4.6.1.AssemblyAttribute.cs
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/Dependency.Test.dll.mdb
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/Dependency.Test.dll
+/Users/kepet/kepet/Dependency/Dependency.Test/obj/Debug/Dependency.Test.dll
+/Users/kepet/kepet/Dependency/Dependency.Test/obj/Debug/Dependency.Test.dll.mdb
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/nunit.framework.dll
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/Dependency.dll
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/Dependency.dll.mdb
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/Dependency.Test.pdb
+/Users/kepet/kepet/Dependency/Dependency.Test/obj/Debug/Dependency.Test.pdb
+/Users/kepet/kepet/Dependency/Dependency.Test/bin/Debug/Dependency.pdb

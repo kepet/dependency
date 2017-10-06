@@ -1,0 +1,7 @@
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/.NETFramework,Version=v4.6.1.AssemblyAttribute.cs
+/Users/kepet/kepet/Dependency/Dependency/bin/Debug/Dependency.dll.mdb
+/Users/kepet/kepet/Dependency/Dependency/bin/Debug/Dependency.dll
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/Dependency.dll
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/Dependency.dll.mdb
+/Users/kepet/kepet/Dependency/Dependency/bin/Debug/Dependency.pdb
+/Users/kepet/kepet/Dependency/Dependency/obj/Debug/Dependency.pdb
