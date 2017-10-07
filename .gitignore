@@ -1,0 +1,7 @@
+.idea
+.vs
+/.idea
+/Dependency/obj
+obj
+bin
+/Dependency.Test/obj
