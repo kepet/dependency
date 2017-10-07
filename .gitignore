@@ -4,3 +4,6 @@
 /Dependency.Test/obj
 obj
 bin
+.vs
+packages
+/packages
