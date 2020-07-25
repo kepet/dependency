@@ -59,7 +59,7 @@ namespace Dependency
 
 		        ////StateHold,
 		        case StepState.WaitDep:
-		            // Analysing dependeicies happens below
+		            // Analysing dependencies happens below
 		            break;
 		        ////StateWaitRerun,
 		        case StepState.Queued:
