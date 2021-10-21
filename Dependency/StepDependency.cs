@@ -2,8 +2,8 @@
 {
 	public class StepDependency : Dependency
 	{
-		public override string Type => "STEP";
-		public string TaskName { get; set; }
+		// public override string Type => "STEP";
+		public string StepName { get; set; }
 	    public DependencyAction OnSuccess { get; set; }
 	    public DependencyAction OnError { get; set; }
 	    public DependencyAction OnTimeout { get; set; }
@@ -11,13 +11,13 @@
 
 
 	    public StepDependency (
-		    string taskName,
+		    string stepName,
 		    DependencyAction onSuccess = DependencyAction.ReleaseDep,
 		    DependencyAction onError = DependencyAction.StepSkip,
 		    DependencyAction onTimeout = DependencyAction.StepSkip,
 		    DependencyAction onSkipped = DependencyAction.StepSkip
 		) {
-			TaskName = taskName;
+			StepName = stepName;
 			OnSuccess = onSuccess;
 	        OnError = onError;
 	        OnTimeout = onTimeout;
@@ -26,7 +26,7 @@
 
 		public override bool Refresh(IScheduler sched, IDependContext context)
 		{
-			var dependTaskState = sched.GetStep(TaskName).State;
+			var dependTaskState = sched.GetStep(StepName).State;
 			//bool changed = false;
 			switch (dependTaskState)
 			{

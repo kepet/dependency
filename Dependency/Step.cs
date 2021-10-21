@@ -34,7 +34,7 @@ namespace Dependency
                 {
                     if (dependency is StepDependency)
                     {
-                        result.Add((dependency as StepDependency).TaskName);
+                        result.Add((dependency as StepDependency).StepName);
                     }
                 }
                 return result;
