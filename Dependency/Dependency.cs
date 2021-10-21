@@ -8,6 +8,7 @@ namespace Dependency
 
 	public enum DependencyState
 	{
+		// Impossible,
 		Blocked,
 		ReleaseThis,
 		//ReleaseDepType,

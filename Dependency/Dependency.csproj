@@ -49,8 +49,12 @@
     <Compile Include="Scheduler.cs" />
     <Compile Include="Step.cs" />
     <Compile Include="StepDependency.cs" />
-    <Compile Include="TimeDependency.cs" />
+    <Compile Include="InspectorDependency.cs" />
+    <Compile Include="TimeInspector.cs" />
     <Compile Include="Topo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IInspector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
