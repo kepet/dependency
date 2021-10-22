@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices.ComTypes;
-
-namespace Dependency
+﻿namespace Dependency
 {
 	public class InspectorDependency : Dependency
 	{

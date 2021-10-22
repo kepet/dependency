@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
+[assembly:InternalsVisibleTo("Dependency.Test")]
+
 
 namespace Dependency
 {
-
 	public enum DependencyState
 	{
 		// Impossible,

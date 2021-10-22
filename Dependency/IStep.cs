@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Dependency
+﻿namespace Dependency
 {
     public interface IStep
     {
@@ -8,7 +6,7 @@ namespace Dependency
         StepState State { get; }
         bool AllowQueueRevoke { get; set; }
 
-        void AddDependency(Dependency dependency);
+        Step AddDependency(Dependency dependency); // TODO: Noget Rod at retunrer nedarvet klasse
         RefreshState Refresh(Scheduler sched, IDependContext context);
     }
 }

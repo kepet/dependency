@@ -54,7 +54,6 @@ namespace Dependency.Test
         }
 
         [Test]
-        [ExpectedException(typeof(Exception))]
         public void CyclicTopoSortTest1()
         {
             var data = new List<IGraphItem>
@@ -63,14 +62,10 @@ namespace Dependency.Test
             };
 
             var sorter = new TopologicalSorter();
-//            Assert.Throws<Exception>(() => sorter.Do(data));
-            sorter.Do(data);
-            Assert.Fail("Expected Exception before reaching here.");
-
+            Assert.Throws<Exception>(() => sorter.Do(data));
         }
 
         [Test]
-        [ExpectedException(typeof(Exception))]
         public void CyclicTopoSortTest2()
         {
             var data = new List<IGraphItem>
@@ -83,15 +78,10 @@ namespace Dependency.Test
             };
 
             var sorter = new TopologicalSorter();
-//            Assert.Throws<Exception>(() => sorter.Do(data));
-            sorter.Do(data);
-            Assert.Fail("Expected Exception before reaching here.");
-
+            Assert.Throws<Exception>(() => sorter.Do(data));
         }
 
-
         [Test]
-        [ExpectedException(typeof(Exception))]
         public void BadDependencyTopoSortTest()
         {
             var data = new List<IGraphItem>
@@ -100,10 +90,7 @@ namespace Dependency.Test
             };
 
             var sorter = new TopologicalSorter();
-//            Assert.Throws<Exception>(() => sorter.Do(data));
-            sorter.Do(data);
-            Assert.Fail("Expected Exception before reaching here.");
-
+            Assert.Throws<Exception>(() => sorter.Do(data));
         }
     }
 }

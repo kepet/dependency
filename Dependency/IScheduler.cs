@@ -3,7 +3,7 @@
 	public interface IScheduler
 	{
 	    SchedulerState State { get; }
-	    void AddStep(Step step);
+	    Scheduler AddStep(Step step); // TODO Noget rod at retunere nedarvet klasse
 		Step GetStep(string name);
 		RefreshState RefreshDependency(IDependContext context);
 	}

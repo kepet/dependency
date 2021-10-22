@@ -93,7 +93,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A3").State);
 
-            // Nothing new happend status as before
+            // Nothing new happened status as before
             Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
@@ -106,7 +106,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Queued, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
 
-            // Nothing new happend status as before
+            // Nothing new happened status as before
             Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.Queued, sched.GetStep("A2").State);
@@ -119,7 +119,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
 
-            // Nothing new happend status as before
+            // Nothing new happened status as before
             Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
             Assert.AreEqual(StepState.Queued, sched.GetStep("A1").State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A2").State);
@@ -133,7 +133,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A2").State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
 
-            // Nothing new happend status as before
+            // Nothing new happened status as before
             Assert.AreEqual(RefreshState.Untouched, sched.RefreshDependency(ctx));
             Assert.AreEqual(SchedulerState.Complete, sched.State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A1").State);
@@ -576,28 +576,31 @@ namespace Dependency.Test
         {
             IScheduler sched;
             IDependContext ctx;
-            Step stepA1;
-            Step stepA2;
-            Step stepA3;
+
 
             // Setup ---------
 
-            sched = new Scheduler();
-
-            stepA1 = new Step("A1"); sched.AddStep(stepA1);
-            stepA2 = new Step("A2"); sched.AddStep(stepA2);
-            stepA3 = new Step("A3"); sched.AddStep(stepA3);
-
-            stepA3.AddDependency(new StepDependency("A1", DependencyAction.StepSuccess));
-            stepA2.AddDependency(new StepDependency("A3", DependencyAction.StepSuccess));
+            sched = new Scheduler()
+                .AddStep(
+                    new Step("A1")
+                )
+                .AddStep(
+                    new Step("A2")
+                    .AddDependency(new StepDependency("A3", DependencyAction.StepSuccess))
+                )
+                .AddStep(
+                    new Step("A3")
+                    .AddDependency(new StepDependency("A1", DependencyAction.StepSuccess))
+                );
 
             ctx = new TestDependContext();
 
             // Error wins over success ------
 
-            stepA1.State = StepState.Success;
-            stepA2.State = StepState.NotSub;
-            stepA3.State = StepState.NotSub;
+            sched.GetStep("A1").State = StepState.Success;
+            sched.GetStep("A2").State = StepState.NotSub;
+            sched.GetStep("A3").State = StepState.NotSub;
+            
             Assert.AreEqual(RefreshState.Updated, sched.RefreshDependency(ctx));
             Assert.AreEqual(SchedulerState.Complete, sched.State);
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
@@ -606,7 +609,6 @@ namespace Dependency.Test
         }
 
         [Test]
-        [ExpectedException(typeof(Exception))]
         public void CycleCheckSchedulerTest()
         {
             IScheduler sched;
@@ -628,15 +630,10 @@ namespace Dependency.Test
             stepA3.AddDependency(new StepDependency("A2", DependencyAction.StepSuccess));
 
             ctx = new TestDependContext();
-//            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
-            sched.RefreshDependency(ctx);
-
-            Assert.Fail("Expected Exception before reaching here.");
-
+            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
         }
 
         [Test]
-        [ExpectedException(typeof(Exception))]
         public void MissingDepCheckSchedulerTest()
         {
             IScheduler sched;
@@ -651,13 +648,7 @@ namespace Dependency.Test
             stepA1.AddDependency(new StepDependency("MISSING", DependencyAction.StepSuccess));
 
             ctx = new TestDependContext();
-//            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
-            sched.RefreshDependency(ctx);
-
-            Assert.Fail("Expected Exception before reaching here.");
+            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
         }
-
-
     }
-
 }

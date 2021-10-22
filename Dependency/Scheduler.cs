@@ -70,10 +70,11 @@ namespace Dependency
 	        }
 	    }
 
-		public void AddStep(Step step)
+		public Scheduler AddStep(Step step)
 		{
 			StepDictionary.Add(step.Name, step);
 		    _orderedStepList = null;
+		    return this;
 		}
 
 		public Step GetStep(string name)

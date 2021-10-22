@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Dependency
+﻿namespace Dependency
 {
 	public interface IDependContext
 	{

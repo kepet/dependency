@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Dependency
 {
@@ -10,11 +11,11 @@ namespace Dependency
 
     public class Step : IStep, IGraphItem
     {
-		public string Name { get; private set; }
+		public string Name { get; }
 		public StepState State { get; internal set; }
 
 		public bool AllowQueueRevoke { get; set; } = true;
-		protected List<Dependency> DependencyList { get; set; }
+		private List<Dependency> DependencyList { get; }
 
 		public Step(string name)
 		{
@@ -41,9 +42,10 @@ namespace Dependency
             }
         }
 
-        public void AddDependency(Dependency dependency)
+        public Step AddDependency(Dependency dependency)
 		{
 			DependencyList.Add(dependency);
+			return this;
 		}
 
 		public RefreshState Refresh(Scheduler sched, IDependContext context)
