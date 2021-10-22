@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dependency.Test
 {
-    [TestFixture]
+    [TestClass]
     public class TimeDependencyTest
     {
         public TimeSpan ToTimeSpan(string time)
@@ -12,7 +12,7 @@ namespace Dependency.Test
             return TimeSpan.ParseExact(time, "c", CultureInfo.InvariantCulture);
         }
         
-        [Test]
+        [TestMethod]
         public void TimeInspectorTestFromEqualTo()
         {
             var trx = TestTimeInspectorContext.Create();
@@ -40,7 +40,7 @@ namespace Dependency.Test
             Assert.AreEqual(InspectorState.Available, rs);
         }
 
-        [Test]
+        [TestMethod]
         public void TimeInspectorTestFromBeforeTo()
         {
             var trx = TestTimeInspectorContext.Create();
@@ -78,7 +78,7 @@ namespace Dependency.Test
             Assert.AreEqual(InspectorState.Blocked, rs);
         }
 
-        [Test]
+        [TestMethod]
         public void TimeInspectorTestFromAfterTo()
         {
             var trx = TestTimeInspectorContext.Create();
@@ -122,7 +122,7 @@ namespace Dependency.Test
         }
 
         
-        // [Test]
+        // [TestMethod]
         // public void TimeDepTest()
         // {
         //     IScheduler sched;
@@ -195,7 +195,7 @@ namespace Dependency.Test
         //     Assert.AreEqual(DependencyState.Blocked, dep.State);
         // }
         //
-        // [Test]
+        // [TestMethod]
         // public void TimeDepStepDepSchedulerTest()
         // {
         //     IScheduler sched;

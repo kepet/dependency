@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dependency.Test
 {
@@ -16,10 +16,10 @@ namespace Dependency.Test
         public List<string> Dependencies { get; }
     }
 
-    [TestFixture]
+    [TestClass]
     public class TopoTest
     {
-        [Test]
+        [TestMethod]
         public void TopoSortTest1()
         {
             var data = new List<IGraphItem>
@@ -44,16 +44,16 @@ namespace Dependency.Test
             var indexF = sortedData.TakeWhile(i => i.Name != "F").Count();
             var indexG = sortedData.TakeWhile(i => i.Name != "G").Count();
 
-            Assert.Greater(indexA,indexE);
-            Assert.Greater(indexB,indexF);
-            Assert.Greater(indexC,indexG);
-            Assert.Greater(indexC,indexA);
-            Assert.Greater(indexC,indexB);
-            Assert.Greater(indexF,indexE);
+            Assert.IsTrue(indexA > indexE);
+            Assert.IsTrue(indexB > indexF);
+            Assert.IsTrue(indexC > indexG);
+            Assert.IsTrue(indexC > indexA);
+            Assert.IsTrue(indexC > indexB);
+            Assert.IsTrue(indexF > indexE);
 
         }
 
-        [Test]
+        [TestMethod]
         public void CyclicTopoSortTest1()
         {
             var data = new List<IGraphItem>
@@ -62,10 +62,10 @@ namespace Dependency.Test
             };
 
             var sorter = new TopologicalSorter();
-            Assert.Throws<Exception>(() => sorter.Do(data));
+            Assert.ThrowsException<Exception>(() => sorter.Do(data));
         }
 
-        [Test]
+        [TestMethod]
         public void CyclicTopoSortTest2()
         {
             var data = new List<IGraphItem>
@@ -78,10 +78,10 @@ namespace Dependency.Test
             };
 
             var sorter = new TopologicalSorter();
-            Assert.Throws<Exception>(() => sorter.Do(data));
+            Assert.ThrowsException<Exception>(() => sorter.Do(data));
         }
 
-        [Test]
+        [TestMethod]
         public void BadDependencyTopoSortTest()
         {
             var data = new List<IGraphItem>
@@ -90,7 +90,7 @@ namespace Dependency.Test
             };
 
             var sorter = new TopologicalSorter();
-            Assert.Throws<Exception>(() => sorter.Do(data));
+            Assert.ThrowsException<Exception>(() => sorter.Do(data));
         }
     }
 }

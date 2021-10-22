@@ -1,12 +1,12 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dependency.Test
 {
-    [TestFixture]
+    [TestClass]
     public class Test
     {
-        [Test]
+        [TestMethod]
         public void StepDepTest()
         {
             IScheduler sched;
@@ -22,7 +22,7 @@ namespace Dependency.Test
             Assert.AreEqual(DependencyState.Blocked, dep.State);
         }
 
-        [Test]
+        [TestMethod]
         public void StepDepSchedulerTest()
         {
             IScheduler sched;
@@ -63,7 +63,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Queued, sched.GetStep("A2").State);
         }
 
-        [Test]
+        [TestMethod]
         public void ReverseStepDepSchedulerTest()
         {
             IScheduler sched;
@@ -178,7 +178,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A2").State);
         }
         
-        [Test]
+        [TestMethod]
         public void TimeAndStepDepSchedulerTest()
         {
         
@@ -217,7 +217,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
         }
 
-        [Test]
+        [TestMethod]
         public void ReleaseAllDepSchedulerTest()
         {
             var sched = new Scheduler();
@@ -284,7 +284,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.WaitDep, sched.GetStep("A3").State);
         }
         
-        [Test]
+        [TestMethod]
         public void SkipDepSchedulerTest()
         {
             var sched = new Scheduler();
@@ -335,7 +335,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Skipped, sched.GetStep("A2").State);
         }
 
-        [Test]
+        [TestMethod]
         public void AllCompleteStateschedulerTest()
         {
             // Error -> ALl to Skipped by Default -------------
@@ -480,7 +480,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
         }
 
-        [Test]
+        [TestMethod]
         public void CompletePriorityStateschedulerTest()
         {
             IScheduler sched;
@@ -571,7 +571,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Skipped, sched.GetStep("A3").State);
         }
 
-        [Test]
+        [TestMethod]
         public void OrderSchedulerTest()
         {
             IScheduler sched;
@@ -608,7 +608,7 @@ namespace Dependency.Test
             Assert.AreEqual(StepState.Success, sched.GetStep("A3").State);
         }
 
-        [Test]
+        [TestMethod]
         public void CycleCheckSchedulerTest()
         {
             IScheduler sched;
@@ -630,10 +630,10 @@ namespace Dependency.Test
             stepA3.AddDependency(new StepDependency("A2", DependencyAction.StepSuccess));
 
             ctx = new TestDependContext();
-            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
+            Assert.ThrowsException<Exception>(() => sched.RefreshDependency(ctx));
         }
 
-        [Test]
+        [TestMethod]
         public void MissingDepCheckSchedulerTest()
         {
             IScheduler sched;
@@ -648,7 +648,7 @@ namespace Dependency.Test
             stepA1.AddDependency(new StepDependency("MISSING", DependencyAction.StepSuccess));
 
             ctx = new TestDependContext();
-            Assert.Throws<Exception>(() => sched.RefreshDependency(ctx));
+            Assert.ThrowsException<Exception>(() => sched.RefreshDependency(ctx));
         }
     }
 }
